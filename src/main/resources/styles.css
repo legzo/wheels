@@ -99,7 +99,7 @@ nav {
     padding-left: var(--space-xs-s);
 }
 
-svg {
+svg.icon {
     width: 1em;
     vertical-align: bottom;
 }
