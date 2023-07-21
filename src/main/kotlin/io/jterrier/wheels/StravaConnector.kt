@@ -23,7 +23,6 @@ import org.http4k.security.RefreshCredentials
 import org.http4k.security.Refreshing
 import org.http4k.security.oauth.core.RefreshToken
 import org.slf4j.LoggerFactory
-import stravaApiConfig
 import java.time.Clock
 import java.time.Instant
 
@@ -33,6 +32,7 @@ class StravaConnector {
 
     private val apiAuthUrl = "https://www.strava.com/oauth/token"
     private val apiUrl = "https://www.strava.com/api/v3"
+    private val pageSize = 200
 
     private val client: HttpHandler = OkHttp()
 
@@ -40,7 +40,8 @@ class StravaConnector {
 
     private val refreshTokenFn = RefreshCredentials<String> { oldToken ->
 
-        val tokenToSend = oldToken?.let { RefreshToken(it) } ?: RefreshToken(stravaApiConfig.refreshToken.value)
+        val tokenToSend = oldToken?.let { RefreshToken(it) }
+            ?: RefreshToken(stravaApiConfig.refreshToken.value)
 
         val clientAuth = ClientFilters.BasicAuth(stravaApiConfig.clientId.value, stravaApiConfig.clientSecret.value)
             //.then(DebuggingFilters.PrintRequestAndResponse())
@@ -69,18 +70,33 @@ class StravaConnector {
             }
     }
 
-    private val refreshingTokenClient =
-        ClientFilters.BearerAuth(
-            CredentialsProvider.Refreshing(
-                refreshFn = refreshTokenFn
-            )
-        )
+    private val refreshingTokenClient = ClientFilters
+        .BearerAuth(CredentialsProvider.Refreshing(refreshFn = refreshTokenFn))
             //.then(DebuggingFilters.PrintRequestAndResponse())
             .then(client)
 
 
-    fun getActivities(): List<ActivityDto> {
-        val response = refreshingTokenClient(Request(GET, "$apiUrl/activities?per_page=200"))
-        return activityListLens(response)
+    fun getActivities(): List<ActivityDto> = getActivitiesByPage(index = 1)
+
+    private fun getActivitiesByPage(index: Int): List<ActivityDto> {
+        val uri = "$apiUrl/activities?per_page=$pageSize&page=$index"
+        logger.info("Calling strava @ {}", uri)
+        return activityListLens(refreshingTokenClient(Request(GET, uri)))
+    }
+
+    fun getNewActivities(alreadySavedIds: Set<Long>): List<ActivityDto> =
+        getNewActivitiesRecur(index = 1, alreadySavedIds)
+
+    private fun getNewActivitiesRecur(
+        index: Int,
+        alreadySavedIds: Set<Long>,
+    ): List<ActivityDto> {
+
+        val newActivities = getActivitiesByPage(index).filter { it.id !in alreadySavedIds }
+
+        return when (newActivities.size) {
+            pageSize -> newActivities + getNewActivitiesRecur(index + 1, alreadySavedIds)
+            else -> newActivities
+        }
     }
 }

@@ -13,13 +13,13 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
     }
 }
 
 plugins {
     application
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.9.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
@@ -31,7 +31,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
 
-    implementation(platform("org.http4k:http4k-bom:4.30.3.0"))
+    implementation(platform("org.http4k:http4k-bom:5.4.0.0"))
     implementation("org.http4k:http4k-client-okhttp")
     implementation("org.http4k:http4k-core")
     implementation("org.http4k:http4k-format-jackson")
@@ -45,7 +45,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
 
-    implementation("org.postgresql:postgresql:42.5.0")
+    implementation("org.postgresql:postgresql:42.5.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.9.1")
 

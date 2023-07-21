@@ -1,6 +1,7 @@
 package io.jterrier.wheels
 
 import io.jterrier.wheels.controllers.MapsListController
+import io.jterrier.wheels.database.DatabaseConnector
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.routing.bind
@@ -11,15 +12,15 @@ import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger("io.jterrier.wheels.Main")
 
+private val db = DatabaseConnector()
+
 private val stravaConnector = StravaConnector()
-private val mapsListController = MapsListController(stravaConnector)
+private val mapsListController = MapsListController(stravaConnector, db)
 
 
 val app: HttpHandler = routes(
     "/" bind GET to mapsListController::displayMaps,
 )
-
-fun Float.toKm(): Double = this.toDouble() / 1000
 
 fun main() {
     val server = app.asServer(Jetty(9000)).start()
