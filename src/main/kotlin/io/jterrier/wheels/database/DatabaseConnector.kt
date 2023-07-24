@@ -32,9 +32,9 @@ class DatabaseConnector {
             .batchInsert(activities, shouldReturnGeneratedValues = false) {
                 this[ActivitiesTable.stravaId] = it.id
                 this[ActivitiesTable.name] = it.name
-                this[ActivitiesTable.startTime] = it.startDateLocal
+                this[ActivitiesTable.startTime] = it.startDate
                 this[ActivitiesTable.durationInSeconds] = it.durationInSeconds
-                this[ActivitiesTable.distance] = it.distance
+                this[ActivitiesTable.distance] = it.distanceInMeters
                 this[ActivitiesTable.polyline] = it.polyline
             }
     }
@@ -47,14 +47,14 @@ class DatabaseConnector {
                     id = it[ActivitiesTable.stravaId],
                     name = it[ActivitiesTable.name],
                     durationInSeconds = it[ActivitiesTable.durationInSeconds],
-                    startDateLocal = it[ActivitiesTable.startTime],
-                    distance = it[ActivitiesTable.distance],
+                    startDate = it[ActivitiesTable.startTime],
+                    distanceInMeters = it[ActivitiesTable.distance],
                     polyline = it[ActivitiesTable.polyline],
                 )
             }
     }
 
-    fun reset() = transaction {
+    fun resetTable() = transaction {
         SchemaUtils.drop(ActivitiesTable)
         SchemaUtils.create(ActivitiesTable)
     }

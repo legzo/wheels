@@ -25,6 +25,7 @@ import org.http4k.security.oauth.core.RefreshToken
 import org.slf4j.LoggerFactory
 import java.time.Clock
 import java.time.Instant
+import kotlin.time.measureTimedValue
 
 class StravaConnector {
 
@@ -78,8 +79,10 @@ class StravaConnector {
 
     private fun getActivitiesByPage(index: Int): List<ActivityDto> {
         val uri = "$apiUrl/activities?per_page=$pageSize&page=$index"
-        logger.info("Calling strava @ {}", uri)
-        return activityListLens(refreshingTokenClient(Request(GET, uri)))
+        logger.info(">>> calling strava @ {}", uri)
+        val (activities, duration) = measureTimedValue { activityListLens(refreshingTokenClient(Request(GET, uri))) }
+        logger.info("    <<< got {} results in {}ms", activities.size, duration.inWholeMilliseconds)
+        return activities
     }
 
     fun getNewActivities(alreadySavedIds: Set<Long>): List<ActivityDto> =

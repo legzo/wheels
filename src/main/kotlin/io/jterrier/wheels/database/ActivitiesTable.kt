@@ -7,7 +7,7 @@ object ActivitiesTable: IntIdTable() {
 
     val stravaId = long("strava_id")
     val name = varchar("name", 200)
-    val distance = float("distance")
+    val distance = double("distance")
     val startTime = timestamp("start_time")
     val durationInSeconds = integer("duration_in_seconds")
     val polyline = varchar("polyline", 4_000)

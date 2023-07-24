@@ -1,5 +1,6 @@
-package io.jterrier.wheels
+package io.jterrier.wheels.views
 
+import io.jterrier.wheels.Activity
 import kotlinx.html.FlowContent
 import kotlinx.html.FlowOrHeadingContent
 import kotlinx.html.FlowOrMetaDataOrPhrasingContent
@@ -15,7 +16,6 @@ import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.unsafe
 import kotlinx.html.visit
-
 
 fun HEAD.inlineCssFromFile(fileName: String) =
     style {
@@ -105,7 +105,7 @@ fun FlowOrMetaDataOrPhrasingContent.heatmapScript(id: String, polylines: List<St
                       const poly = L.polyline(
                         coordinates,
                         {
-                          color: 'blue',
+                          color: '#0042bf',
                           weight: 4,
                           opacity: .4,
                           lineJoin: 'round'
@@ -130,6 +130,53 @@ fun HTMLTag.svgFromFile(name: String) =
         raw(getResourceAsText("/svg/$name.svg"))
     }
 
+fun FlowContent.monthlyGraph(monthlyDistances: List<Pair<String, Int>>) {
+    div {
+        id = "monthly-distances"
+    }
+
+    val monthlyDistancesJson = monthlyDistances
+        .takeLast(13)
+        .joinToString(prefix = "[", postfix = "]") { "{ month: '${it.first}', distance: ${it.second} }" }
+
+    script(type = "module") {
+        unsafe {
+            raw(
+                """
+                import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
+                
+                const data = $monthlyDistancesJson
+                
+                const plot =
+                  Plot
+                    .barY(
+                      data,
+                      {
+                        x: "month",
+                        y: "distance",
+                        fill: "#555"
+                      },
+                    )
+                    .plot(
+                      {
+                        x: {
+                          type: "band"
+                        },
+                        y: {
+                          grid: true
+                        },
+                        style: {
+                          background: "var(--color-light)"
+                        }
+                      }
+                    );
+                const div = document.querySelector("#monthly-distances");
+                div.append(plot);
+                 """.trimIndent()
+            )
+        }
+    }
+}
 
 @HtmlTagMarker
 inline fun FlowOrHeadingContent.h1(svg: String, title: String, crossinline block: H1.() -> Unit = {}): Unit =

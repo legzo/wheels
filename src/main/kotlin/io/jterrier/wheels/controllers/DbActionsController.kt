@@ -8,14 +8,14 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class DbActionsController(
-    private val dbConnector: DatabaseConnector,
+    private val db: DatabaseConnector,
 ) {
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     fun reset(@Suppress("UNUSED_PARAMETER") request: Request): Response {
         logger.info("Resetting table `activities`")
-        dbConnector.reset()
+        db.resetTable()
         return Response(Status.OK)
     }
 

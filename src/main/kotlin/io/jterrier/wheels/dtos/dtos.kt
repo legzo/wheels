@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class ActivityDto(
     val id: Long,
     val name: String,
-    val distance: Float,
+    val distance: Double,
     @JsonProperty("moving_time")
     val movingTime: Int,
     @JsonProperty("elapsed_time")

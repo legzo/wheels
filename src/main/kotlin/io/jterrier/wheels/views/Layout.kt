@@ -1,7 +1,5 @@
 package io.jterrier.wheels.views
 
-import io.jterrier.wheels.h1
-import io.jterrier.wheels.inlineCssFromFile
 import kotlinx.html.FlowContent
 import kotlinx.html.body
 import kotlinx.html.div

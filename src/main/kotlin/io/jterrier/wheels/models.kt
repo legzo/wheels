@@ -5,8 +5,8 @@ import kotlinx.datetime.Instant
 data class Activity(
     val id: Long,
     val name: String,
-    val startDateLocal: Instant,
+    val startDate: Instant,
     val durationInSeconds: Int,
-    val distance: Float,
+    val distanceInMeters: Double,
     val polyline: String
 )
