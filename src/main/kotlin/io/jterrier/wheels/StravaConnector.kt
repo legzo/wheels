@@ -76,8 +76,6 @@ class StravaConnector {
             .then(client)
 
 
-    fun getActivities(): List<ActivityDto> = getActivitiesByPage(index = 1)
-
     private fun getActivitiesByPage(index: Int): List<ActivityDto> {
         val uri = "$apiUrl/activities?per_page=$pageSize&page=$index"
         logger.info("Calling strava @ {}", uri)
@@ -91,7 +89,6 @@ class StravaConnector {
         index: Int,
         alreadySavedIds: Set<Long>,
     ): List<ActivityDto> {
-
         val newActivities = getActivitiesByPage(index).filter { it.id !in alreadySavedIds }
 
         return when (newActivities.size) {

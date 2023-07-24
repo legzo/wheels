@@ -13,8 +13,8 @@ data class ActivityDto(
     @JsonProperty("total_elevation_gain")
     val totalElevationGain: Int,
     val type: String,
-    @JsonProperty("start_date_local")
-    val startDateLocal: String,
+    @JsonProperty("start_date")
+    val startDate: String,
     @JsonProperty("average_speed")
     val averageSpeed: Float,
     @JsonProperty("max_speed")

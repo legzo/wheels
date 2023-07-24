@@ -32,6 +32,8 @@ class DatabaseConnector {
             .batchInsert(activities, shouldReturnGeneratedValues = false) {
                 this[ActivitiesTable.stravaId] = it.id
                 this[ActivitiesTable.name] = it.name
+                this[ActivitiesTable.startTime] = it.startDateLocal
+                this[ActivitiesTable.durationInSeconds] = it.durationInSeconds
                 this[ActivitiesTable.distance] = it.distance
                 this[ActivitiesTable.polyline] = it.polyline
             }
@@ -44,9 +46,16 @@ class DatabaseConnector {
                 Activity(
                     id = it[ActivitiesTable.stravaId],
                     name = it[ActivitiesTable.name],
+                    durationInSeconds = it[ActivitiesTable.durationInSeconds],
+                    startDateLocal = it[ActivitiesTable.startTime],
                     distance = it[ActivitiesTable.distance],
                     polyline = it[ActivitiesTable.polyline],
                 )
             }
+    }
+
+    fun reset() = transaction {
+        SchemaUtils.drop(ActivitiesTable)
+        SchemaUtils.create(ActivitiesTable)
     }
 }

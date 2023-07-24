@@ -4,6 +4,7 @@ import io.jterrier.wheels.Activity
 import io.jterrier.wheels.StravaConnector
 import io.jterrier.wheels.database.DatabaseConnector
 import io.jterrier.wheels.views.MapsListView
+import kotlinx.datetime.Instant
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
@@ -15,7 +16,7 @@ class MapsListController(
     private val dbConnector: DatabaseConnector,
 ) {
 
-    val distanceQuery = Query.int().defaulted("min_distance", 20)
+    private val distanceQuery = Query.int().defaulted("min_distance", 20)
 
     fun displayMaps(request: Request): Response {
 
@@ -32,6 +33,8 @@ class MapsListController(
                 Activity(
                     id = it.id,
                     name = it.name,
+                    startDateLocal = Instant.parse(it.startDate),
+                    durationInSeconds = it.elapsedTime,
                     distance = it.distance,
                     polyline = it.map.summaryPolyline
                 )

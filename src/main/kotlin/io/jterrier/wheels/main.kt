@@ -1,5 +1,6 @@
 package io.jterrier.wheels
 
+import io.jterrier.wheels.controllers.DbActionsController
 import io.jterrier.wheels.controllers.MapsListController
 import io.jterrier.wheels.database.DatabaseConnector
 import org.http4k.core.HttpHandler
@@ -16,10 +17,13 @@ private val db = DatabaseConnector()
 
 private val stravaConnector = StravaConnector()
 private val mapsListController = MapsListController(stravaConnector, db)
-
+private val dbActionsController = DbActionsController(db)
 
 val app: HttpHandler = routes(
     "/" bind GET to mapsListController::displayMaps,
+    "/db" bind routes(
+        "/reset" bind GET to dbActionsController::reset
+    ),
 )
 
 fun main() {
