@@ -33,7 +33,7 @@ class StravaConnector {
 
     private val apiAuthUrl = "https://www.strava.com/oauth/token"
     private val apiUrl = "https://www.strava.com/api/v3"
-    private val pageSize = 200
+    private val pageSize = 50
 
     private val client: HttpHandler = OkHttp()
 

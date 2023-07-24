@@ -46,6 +46,7 @@ class HomeController(
 
         val allActivitiesFromDb = db.getAll()
         val activitiesToDisplay = allActivitiesFromDb
+            .sortedByDescending { it.startDate }
             .filter { it.distanceInMeters > minDistanceInMeters }
 
         return Response(Status.OK).body(
