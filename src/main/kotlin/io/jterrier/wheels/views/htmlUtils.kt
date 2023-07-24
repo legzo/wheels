@@ -58,7 +58,7 @@ fun FlowOrMetaDataOrPhrasingContent.mapScript(id: String, polyline: String) =
                   const poly = L.polyline(
                     coordinates,
                     {
-                      color: 'blue',
+                      color: '#0042bf',
                       weight: 4,
                       opacity: .7,
                       lineJoin: 'round'
