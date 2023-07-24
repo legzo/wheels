@@ -5,6 +5,10 @@
 ./gradlew shadowJar
 ```
 
+## Icônes SVG
+
+- https://iconsvg.xyz/
+
 ## Fly.io
 
 ### Connexion database

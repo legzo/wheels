@@ -104,6 +104,10 @@ svg.icon {
     vertical-align: bottom;
 }
 
+h3 svg.icon {
+    margin-right: 0.1em;
+}
+
 .grid {
     display: grid;
     gap: var(--gutter, var(--space-s-m));
@@ -126,4 +130,8 @@ svg.icon {
     100% {
         transform: rotate(360deg);
     }
+}
+
+.leaflet-tile-pane {
+    filter: saturate(0.2);
 }

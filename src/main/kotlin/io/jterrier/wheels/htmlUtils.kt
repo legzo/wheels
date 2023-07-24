@@ -3,6 +3,7 @@ package io.jterrier.wheels
 import kotlinx.html.FlowContent
 import kotlinx.html.FlowOrHeadingContent
 import kotlinx.html.FlowOrMetaDataOrPhrasingContent
+import kotlinx.html.H1
 import kotlinx.html.H3
 import kotlinx.html.HEAD
 import kotlinx.html.HTMLTag
@@ -129,6 +130,14 @@ fun HTMLTag.svgFromFile(name: String) =
         raw(getResourceAsText("/svg/$name.svg"))
     }
 
+
+@HtmlTagMarker
+inline fun FlowOrHeadingContent.h1(svg: String, title: String, crossinline block: H1.() -> Unit = {}): Unit =
+    H1(attributesMapOf("class", null), consumer).visit {
+        title(svg, title)
+        block()
+    }
+
 @HtmlTagMarker
 inline fun FlowOrHeadingContent.h3(svg: String, title: String, crossinline block: H3.() -> Unit = {}): Unit =
     H3(attributesMapOf("class", null), consumer).visit {
@@ -138,7 +147,7 @@ inline fun FlowOrHeadingContent.h3(svg: String, title: String, crossinline block
 
 fun HTMLTag.title(svg: String, title: String) {
     svgFromFile(svg)
-    +" $title"
+    +title
 }
 
 fun getResourceAsText(path: String): String =

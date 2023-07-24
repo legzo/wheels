@@ -1,10 +1,10 @@
 package io.jterrier.wheels.views
 
+import io.jterrier.wheels.h1
 import io.jterrier.wheels.inlineCssFromFile
 import kotlinx.html.FlowContent
 import kotlinx.html.body
 import kotlinx.html.div
-import kotlinx.html.h1
 import kotlinx.html.head
 import kotlinx.html.html
 import kotlinx.html.link
@@ -45,8 +45,7 @@ object Layout {
 
         body {
             div(classes = "region") {
-                h1 { +"Wheels" }
-
+                h1("bike", "Wheels")
                 block()
             }
         }
