@@ -3,6 +3,7 @@ package io.jterrier.wheels
 import io.jterrier.wheels.controllers.DbActionsController
 import io.jterrier.wheels.controllers.HomeController
 import io.jterrier.wheels.database.DatabaseConnector
+import io.jterrier.wheels.statistics.StatsService
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Response

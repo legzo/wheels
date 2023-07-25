@@ -1,6 +1,8 @@
 package io.jterrier.wheels.views
 
 import io.jterrier.wheels.Activity
+import io.jterrier.wheels.statistics.ActivityDistance
+import io.jterrier.wheels.statistics.MonthlyReport
 import kotlinx.html.FlowContent
 import kotlinx.html.FlowOrHeadingContent
 import kotlinx.html.FlowOrMetaDataOrPhrasingContent
@@ -25,10 +27,12 @@ fun HEAD.inlineCssFromFile(fileName: String) =
     }
 
 
+private const val graphHeight = 320
+
 fun FlowContent.mapForActivity(it: Activity) {
     div {
         id = "map-${it.id}"
-        attributes["style"] = "width: 100%; max-width: 400px; height: 300px; margin: 1vh 0 4vh 0;"
+        attributes["style"] = "width: 100%; max-width: 400px; height: ${graphHeight}px; margin: 1vh 0 4vh 0;"
     }
 
     mapScript(it.id, it.polyline)
@@ -130,14 +134,13 @@ fun HTMLTag.svgFromFile(name: String) =
         raw(getResourceAsText("/svg/$name.svg"))
     }
 
-fun FlowContent.monthlyGraph(monthlyDistances: List<Pair<String, Int>>) {
+fun FlowContent.monthlyGraph(monthlyDistances: List<MonthlyReport>) {
     div {
         id = "monthly-distances"
     }
 
     val monthlyDistancesJson = monthlyDistances
-        .takeLast(13)
-        .joinToString(prefix = "[", postfix = "]") { "{ month: '${it.first}', distance: ${it.second} }" }
+        .joinToString(prefix = "[", postfix = "]") { "{ month: new Date('${it.month}'), distance: ${it.distance} }" }
 
     script(type = "module") {
         unsafe {
@@ -147,30 +150,121 @@ fun FlowContent.monthlyGraph(monthlyDistances: List<Pair<String, Int>>) {
                 
                 const data = $monthlyDistancesJson
                 
+                 const plot =
+                  Plot
+                    .plot(
+                      {
+                        x: {
+                          grid: true,
+                          label: null,
+                          ticks: 12,
+                        },
+                        y: {
+                          grid: true,
+                          label: null,
+                          labelAnchor: "top",
+                          domain: [0, 700],
+                          ticks: 6,
+                        },
+                        style: {
+                          background: "var(--color-light)",
+                          height: "${graphHeight}px"
+                        },
+                        marks: [
+                          Plot.lineY(
+                            data,
+                            {
+                              x: "month",
+                              y: "distance",
+                              stroke: "#555",
+                              strokeWidth: 4
+                            },
+                          ),
+                          Plot.areaY(
+                            data,
+                            {
+                              x: "month",
+                              y: "distance",
+                              fillOpacity: 0.1
+                            }
+                          ),
+                          Plot.dot(
+                            data,
+                            {
+                              x: "month",
+                              y: "distance",
+                              r: 6,
+                              fill: "#0042bf",
+                              tip: true,
+                            },                            
+                          ),
+                          Plot.dot(
+                            data,
+                            {
+                              x: "month",
+                              y: "distance",
+                              r: 8,
+                              stroke: "#0042bf",
+                            },                            
+                          )
+                        ]
+                      }
+                    )
+                  ;
+                    
+                const div = document.querySelector("#monthly-distances");
+                div.append(plot);
+                 """.trimIndent()
+            )
+        }
+    }
+}
+
+fun FlowContent.scatterPlot(activitiesByDate: List<ActivityDistance>) {
+    div {
+        id = "activities-by-date"
+    }
+
+    val activitiesByDateJson = activitiesByDate
+        .joinToString(prefix = "[", postfix = "]") {
+            "{ date: new Date('${it.date}'), distance: ${it.distance}, isCommute: ${it.isCommute} }"
+        }
+
+    script(type = "module") {
+        unsafe {
+            raw(
+                """
+                import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
+                
+                const data = $activitiesByDateJson
+               
                 const plot =
                   Plot
-                    .barY(
+                    .dot(
                       data,
                       {
-                        x: "month",
+                        x: "date",
                         y: "distance",
-                        fill: "#555"
+                        r: 5,
+                        fill: "#0042bf",
+                        // fill: (d) => d.isCommute ? "#555555" : "#0042bf",
                       },
                     )
                     .plot(
                       {
-                        x: {
-                          type: "band"
+                        style: {
+                          background: "var(--color-light)",
+                          height: "${graphHeight}px"
                         },
                         y: {
-                          grid: true
+                          grid: true,
+                          ticks: 6,
+                          label: null,
                         },
-                        style: {
-                          background: "var(--color-light)"
-                        }
                       }
                     );
-                const div = document.querySelector("#monthly-distances");
+               
+                const div = document.querySelector("#activities-by-date");
                 div.append(plot);
                  """.trimIndent()
             )

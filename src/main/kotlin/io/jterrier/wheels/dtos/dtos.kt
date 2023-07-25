@@ -16,10 +16,12 @@ data class ActivityDto(
     @JsonProperty("start_date")
     val startDate: String,
     @JsonProperty("average_speed")
-    val averageSpeed: Float,
+    val averageSpeed: Double,
     @JsonProperty("max_speed")
-    val maxSpeed: Float,
-    val map: MapDto
+    val maxSpeed: Double,
+    val map: MapDto,
+    @JsonProperty("commute")
+    val isCommute: Boolean,
 )
 
 data class MapDto(

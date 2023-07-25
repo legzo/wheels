@@ -1,9 +1,9 @@
 package io.jterrier.wheels.controllers
 
 import io.jterrier.wheels.Activity
-import io.jterrier.wheels.StatsService
 import io.jterrier.wheels.StravaConnector
 import io.jterrier.wheels.database.DatabaseConnector
+import io.jterrier.wheels.statistics.StatsService
 import io.jterrier.wheels.views.HomeView
 import kotlinx.datetime.Instant
 import org.http4k.core.Request
@@ -35,10 +35,14 @@ class HomeController(
                 Activity(
                     id = it.id,
                     name = it.name,
-                    startDate = Instant.parse(it.startDate),
-                    durationInSeconds = it.elapsedTime,
                     distanceInMeters = it.distance,
-                    polyline = it.map.summaryPolyline
+                    durationInSeconds = it.elapsedTime,
+                    totalElevationGain = it.totalElevationGain,
+                    startTime = Instant.parse(it.startDate),
+                    averageSpeed = it.averageSpeed,
+                    maxSpeed = it.maxSpeed,
+                    polyline = it.map.summaryPolyline,
+                    isCommute = it.isCommute,
                 )
             }
 
@@ -46,14 +50,15 @@ class HomeController(
 
         val allActivitiesFromDb = db.getAll()
         val activitiesToDisplay = allActivitiesFromDb
-            .sortedByDescending { it.startDate }
+            .sortedByDescending { it.startTime }
             .filter { it.distanceInMeters > minDistanceInMeters }
 
         return Response(Status.OK).body(
             HomeView(
                 heatMapActivities = activitiesToDisplay,
                 totalNbOfActivities = allActivitiesFromDb.size,
-                monthlyDistances = statsService.getMonthlyDistance(allActivitiesFromDb)
+                monthlyDistances = statsService.getMonthlyDistance(allActivitiesFromDb),
+                scatterPlotData = statsService.getScatterPlotData(allActivitiesFromDb)
             )
                 .display()
         )

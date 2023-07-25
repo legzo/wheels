@@ -141,3 +141,11 @@ h3 svg.icon {
     text-overflow: ellipsis;
     overflow: hidden;
 }
+
+#activities-by-date circle {
+    opacity: 0.3;
+}
+
+svg text {
+    font-size: 1.8em;
+}

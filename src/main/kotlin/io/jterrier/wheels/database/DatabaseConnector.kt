@@ -32,10 +32,14 @@ class DatabaseConnector {
             .batchInsert(activities, shouldReturnGeneratedValues = false) {
                 this[ActivitiesTable.stravaId] = it.id
                 this[ActivitiesTable.name] = it.name
-                this[ActivitiesTable.startTime] = it.startDate
-                this[ActivitiesTable.durationInSeconds] = it.durationInSeconds
                 this[ActivitiesTable.distance] = it.distanceInMeters
+                this[ActivitiesTable.durationInSeconds] = it.durationInSeconds
+                this[ActivitiesTable.totalElevationGain] = it.totalElevationGain
+                this[ActivitiesTable.startTime] = it.startTime
+                this[ActivitiesTable.averageSpeed] = it.averageSpeed
+                this[ActivitiesTable.maxSpeed] = it.maxSpeed
                 this[ActivitiesTable.polyline] = it.polyline
+                this[ActivitiesTable.isCommute] = it.isCommute
             }
     }
 
@@ -46,10 +50,14 @@ class DatabaseConnector {
                 Activity(
                     id = it[ActivitiesTable.stravaId],
                     name = it[ActivitiesTable.name],
-                    durationInSeconds = it[ActivitiesTable.durationInSeconds],
-                    startDate = it[ActivitiesTable.startTime],
                     distanceInMeters = it[ActivitiesTable.distance],
+                    durationInSeconds = it[ActivitiesTable.durationInSeconds],
+                    totalElevationGain = it[ActivitiesTable.totalElevationGain],
+                    startTime = it[ActivitiesTable.startTime],
+                    averageSpeed = it[ActivitiesTable.averageSpeed],
+                    maxSpeed = it[ActivitiesTable.maxSpeed],
                     polyline = it[ActivitiesTable.polyline],
+                    isCommute = it[ActivitiesTable.isCommute],
                 )
             }
     }

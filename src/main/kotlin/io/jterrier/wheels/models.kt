@@ -5,8 +5,12 @@ import kotlinx.datetime.Instant
 data class Activity(
     val id: Long,
     val name: String,
-    val startDate: Instant,
-    val durationInSeconds: Int,
     val distanceInMeters: Double,
-    val polyline: String
+    val durationInSeconds: Int,
+    val totalElevationGain: Int,
+    val startTime: Instant,
+    val averageSpeed: Double,
+    val maxSpeed: Double,
+    val polyline: String,
+    val isCommute: Boolean,
 )

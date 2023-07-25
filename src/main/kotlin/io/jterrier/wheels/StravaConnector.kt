@@ -87,6 +87,7 @@ class StravaConnector {
 
     fun getNewActivities(alreadySavedIds: Set<Long>): List<ActivityDto> =
         getNewActivitiesRecur(index = 1, alreadySavedIds)
+            .filter { it.type == "Ride" }
 
     private fun getNewActivitiesRecur(
         index: Int,
