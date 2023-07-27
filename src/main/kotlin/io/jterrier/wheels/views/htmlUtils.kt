@@ -49,7 +49,12 @@ fun FlowOrMetaDataOrPhrasingContent.mapScript(id: String, polyline: String) =
             raw(
                 """
                 (function () {
-                  const map = L.map('map-$id');
+                  const map = L.map('map-$id', {
+                    zoomControl: false,
+                    scrollWheelZoom: false,
+                    touchZoom: false,
+                    dragging: false,
+                  });
                   L.tileLayer(
                     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 18,
@@ -89,7 +94,7 @@ fun FlowOrMetaDataOrPhrasingContent.heatmapScript(id: String, polylines: List<St
                 (function () {
                   const map = L.map('$id', {
                     center: [44.842, -0.551],
-                    zoom: 10
+                    zoom: 10,
                   });
                   
                   L.tileLayer(
@@ -248,6 +253,7 @@ fun FlowContent.scatterPlot(activitiesByDate: List<ActivityDistance>) {
                         r: 5,
                         fill: "#0042bf",
                         // fill: (d) => d.isCommute ? "#555555" : "#0042bf",
+                        tip: true,
                       },
                     )
                     .plot(
@@ -260,6 +266,7 @@ fun FlowContent.scatterPlot(activitiesByDate: List<ActivityDistance>) {
                           grid: true,
                           ticks: 6,
                           label: null,
+                          domain: [0, 130],
                         },
                       }
                     );

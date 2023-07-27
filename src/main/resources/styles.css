@@ -142,6 +142,10 @@ h3 svg.icon {
     overflow: hidden;
 }
 
+.activity-details {
+    filter: brightness(160%);
+}
+
 #activities-by-date circle {
     opacity: 0.3;
 }

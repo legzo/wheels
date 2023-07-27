@@ -8,12 +8,15 @@ import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.id
 
+
 class HomeView(
     private val heatMapActivities: List<Activity>,
     private val totalNbOfActivities: Int,
     private val monthlyDistances: List<MonthlyReport>,
     private val scatterPlotData: List<ActivityDistance>,
 ) {
+
+    private val numberOfActivities = 12
 
     fun display(): String = Layout.display {
         div(classes = "grid") {
@@ -44,12 +47,12 @@ class HomeView(
     }
 
     private fun FlowContent.listOfActivitiesWithMaps() = div {
-        h3(svg = "list", "last 10 rides")
+        h3(svg = "list", "last $numberOfActivities rides")
         div(classes = "grid") {
-            heatMapActivities.take(10).map { activity ->
+            heatMapActivities.take(12).map { activity ->
                 div {
                     div(classes = "activity") { b { +activity.name } }
-                    div { +"${"%.2f".format(activity.distanceInMeters.toKm())} km" }
+                    div(classes = "activity-details") { +"${activity.distanceInMeters.toKm().show()} km • ${activity.averageSpeed.toKmPerSecond().show()} km/h • ${activity.totalElevationGain} m↑" }
                     div { mapForActivity(activity) }
                 }
             }
