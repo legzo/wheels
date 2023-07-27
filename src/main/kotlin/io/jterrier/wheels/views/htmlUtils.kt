@@ -54,6 +54,7 @@ fun FlowOrMetaDataOrPhrasingContent.mapScript(id: String, polyline: String) =
                     scrollWheelZoom: false,
                     touchZoom: false,
                     dragging: false,
+                    zoomSnap: 0.3,
                   });
                   L.tileLayer(
                     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
