@@ -137,6 +137,7 @@ h3 svg.icon {
 }
 
 .activity {
+    /*noinspection CssInvalidPropertyValue*/
     text-wrap: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
