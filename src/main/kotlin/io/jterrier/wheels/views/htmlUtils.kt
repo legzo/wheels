@@ -57,9 +57,12 @@ fun FlowOrMetaDataOrPhrasingContent.mapScript(id: String, polyline: String) =
                     zoomSnap: 0.3,
                   });
                   L.tileLayer(
-                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 18,
-                  }).addTo(map);
+                    // 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',  
+                    'https://tile.osmand.net/hd/{z}/{x}/{y}.png',  
+                    {
+                      maxZoom: 18,
+                    }
+                  ).addTo(map);
 
                   const encoded = "${polyline.rectify()}"
                     
@@ -99,9 +102,12 @@ fun FlowOrMetaDataOrPhrasingContent.heatmapScript(id: String, polylines: List<St
                   });
                   
                   L.tileLayer(
-                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 18,
-                  }).addTo(map);
+                    // 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    'https://tile.osmand.net/hd/{z}/{x}/{y}.png',
+                    {
+                      maxZoom: 18,
+                    }
+                  ).addTo(map);
                 
                   const encodedRoutes = $polylinesForJs
                 

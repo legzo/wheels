@@ -133,7 +133,11 @@ h3 svg.icon {
 }
 
 .leaflet-tile-pane {
-    filter: saturate(0.2);
+    filter: saturate(0.3);
+}
+
+.leaflet-control-attribution {
+    display: none;
 }
 
 .activity {
