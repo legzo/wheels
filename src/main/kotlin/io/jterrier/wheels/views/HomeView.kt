@@ -8,7 +8,6 @@ import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.id
 
-
 class HomeView(
     private val heatMapActivities: List<Activity>,
     private val totalNbOfActivities: Int,

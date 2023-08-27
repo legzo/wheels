@@ -30,14 +30,24 @@ val dbUrlLens: Lens<Environment, DbUrl> = EnvironmentKey.map(::DbUrl).required("
 val dbUserLens: Lens<Environment, DbUser> = EnvironmentKey.map(::DbUser).required("DB_USER")
 val dbPasswordLens: Lens<Environment, DbPassword> = EnvironmentKey.map(::DbPassword).required("DB_PASSWORD")
 
-val clientIdLens: Lens<Environment, ClientId> = EnvironmentKey.map(::ClientId).required("STRAVA_CLIENT_ID")
-val clientSecretLens: Lens<Environment, ClientSecret> = EnvironmentKey.map(::ClientSecret).required("STRAVA_CLIENT_SECRET")
-val refreshTokenLens: Lens<Environment, RefreshToken> = EnvironmentKey.map(::RefreshToken).required("STRAVA_REFRESH_TOKEN")
+val stravaClientIdLens: Lens<Environment, ClientId> = EnvironmentKey.map(::ClientId).required("STRAVA_CLIENT_ID")
+val stravaClientSecretLens: Lens<Environment, ClientSecret> = EnvironmentKey.map(::ClientSecret).required("STRAVA_CLIENT_SECRET")
+val stravaRefreshTokenLens: Lens<Environment, RefreshToken> = EnvironmentKey.map(::RefreshToken).required("STRAVA_REFRESH_TOKEN")
+
+val googleClientIdLens: Lens<Environment, ClientId> = EnvironmentKey.map(::ClientId).required("GOOGLE_CLIENT_ID")
+val googleClientSecretLens: Lens<Environment, ClientSecret> = EnvironmentKey.map(::ClientSecret).required("GOOGLE_CLIENT_SECRET")
+val googleRefreshTokenLens: Lens<Environment, RefreshToken> = EnvironmentKey.map(::RefreshToken).required("GOOGLE_REFRESH_TOKEN")
 
 val stravaApiConfig = SpotifyCredentials(
-    clientId = clientIdLens(env),
-    clientSecret = clientSecretLens(env),
-    refreshToken = refreshTokenLens(env),
+    clientId = stravaClientIdLens(env),
+    clientSecret = stravaClientSecretLens(env),
+    refreshToken = stravaRefreshTokenLens(env),
+)
+
+val googleApiConfig = SpotifyCredentials(
+    clientId = googleClientIdLens(env),
+    clientSecret = googleClientSecretLens(env),
+    refreshToken = googleRefreshTokenLens(env),
 )
 
 val databaseConfig = DatabaseConfig(

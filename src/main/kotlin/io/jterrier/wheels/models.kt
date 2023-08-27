@@ -14,3 +14,8 @@ data class Activity(
     val polyline: String,
     val isCommute: Boolean,
 )
+
+data class Route(
+    val id: String,
+    val name: String,
+)
