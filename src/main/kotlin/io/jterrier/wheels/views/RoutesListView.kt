@@ -14,7 +14,6 @@ class RoutesListView(
     }
 
     private fun FlowContent.listOfRoutes() = div {
-        h3(svg = "list", "routes")
         div(classes = "grid") {
             routes.map { route ->
                 div {

@@ -1,3 +1,5 @@
+/* from https://buildexcellentwebsit.es/ */
+
 :root {
     --color-dark: #404040;
     --color-light: #f3f3f3;
@@ -59,7 +61,8 @@ h3 {
 }
 
 h1 {
-    font-size: var(--size-step-4)
+    font-size: var(--size-step-4);
+    margin-bottom: 0;
 }
 
 h1 a {
@@ -77,6 +80,16 @@ h3 {
 
 nav {
     font-size: var(--size-step-3)
+}
+
+
+#navigation a::before {
+    content: "➘ ";
+}
+
+#navigation a {
+    font-size: 1.2em;
+    margin: 0 10px;
 }
 
 .region {

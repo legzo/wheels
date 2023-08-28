@@ -1,10 +1,12 @@
 package io.jterrier.wheels.views
 
 import kotlinx.html.FlowContent
+import kotlinx.html.a
 import kotlinx.html.body
 import kotlinx.html.div
 import kotlinx.html.head
 import kotlinx.html.html
+import kotlinx.html.id
 import kotlinx.html.link
 import kotlinx.html.meta
 import kotlinx.html.script
@@ -44,6 +46,18 @@ object Layout {
         body {
             div(classes = "region") {
                 h1("bike", "Wheels")
+                div {
+                    id = "navigation"
+
+                    a {
+                        href = "/"
+                        +"activities"
+                    }
+                    a {
+                        href = "/routes"
+                        +"routes"
+                    }
+                }
                 block()
             }
         }
