@@ -17,7 +17,7 @@ class RoutesListController(
                routes = googleDriveConnector.getFiles().map {
                    Route(
                        id = it.id,
-                       name = it.name
+                       name = it.name.replace(".gpx", "")
                    )
                }
             )

@@ -82,14 +82,13 @@ nav {
     font-size: var(--size-step-3)
 }
 
-
 #navigation a::before {
     content: "➘ ";
 }
 
 #navigation a {
     font-size: 1.2em;
-    margin: 0 10px;
+    margin: 0 0.4em;
 }
 
 .region {
