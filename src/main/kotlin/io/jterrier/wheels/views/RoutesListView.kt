@@ -20,9 +20,9 @@ class RoutesListView(
             routes.map { route ->
                 div {
                     div(classes = "route") {
-                        b { +route.name }
-                        +" "
                         a(href = route.url, target = "_blank") { +"✎" }
+                        +" "
+                        b { +route.name }
                     }
                 }
             }

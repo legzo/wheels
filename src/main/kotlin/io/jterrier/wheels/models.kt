@@ -19,5 +19,10 @@ data class Route(
     val id: String,
     val name: String,
     val url: String,
-    val content: String,
+)
+
+
+data class RouteWithGpx(
+    val route: Route,
+    val gpx: String
 )

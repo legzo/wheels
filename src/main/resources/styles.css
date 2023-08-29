@@ -152,7 +152,7 @@ h3 svg.icon {
     display: none;
 }
 
-.activity {
+.activity, .route {
     /*noinspection CssInvalidPropertyValue*/
     text-wrap: nowrap;
     text-overflow: ellipsis;

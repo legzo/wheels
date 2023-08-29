@@ -2,6 +2,7 @@ package io.jterrier.wheels.services
 
 import io.jterrier.wheels.GoogleDriveConnector
 import io.jterrier.wheels.Route
+import io.jterrier.wheels.RouteWithGpx
 import io.jterrier.wheels.database.DatabaseConnector
 import io.jterrier.wheels.launchChunked
 import io.jterrier.wheels.parseWithRegex
@@ -14,9 +15,7 @@ class RoutesService(
 
     fun getRoutes(): List<Route> {
 
-        val alreadySavedIds = db.getAllRoutes()
-            .map { it.id }
-            .toSet()
+        val alreadySavedIds = db.getAllRoutesIds()
 
         val newFilesToFetch = googleDriveConnector
             .getFiles()
@@ -25,11 +24,13 @@ class RoutesService(
         val newRoutes = newFilesToFetch
             .launchChunked(Dispatchers.IO, 10) {
                 val routeGpx = googleDriveConnector.getFile(it.id)
-                Route(
-                    id = it.id,
-                    name = it.name.replace(".gpx", ""),
-                    content = routeGpx,
-                    url = findUrl(routeGpx)
+                RouteWithGpx(
+                    route = Route(
+                        id = it.id,
+                        name = it.name.replace(".gpx", ""),
+                        url = findUrl(routeGpx)
+                    ),
+                    gpx = routeGpx
                 )
             }
 

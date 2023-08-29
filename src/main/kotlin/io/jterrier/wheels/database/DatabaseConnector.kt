@@ -2,6 +2,7 @@ package io.jterrier.wheels.database
 
 import io.jterrier.wheels.Activity
 import io.jterrier.wheels.Route
+import io.jterrier.wheels.RouteWithGpx
 import io.jterrier.wheels.databaseConfig
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -46,13 +47,13 @@ class DatabaseConnector {
             }
     }
 
-    fun saveRoutes(routes: Collection<Route>) = transaction {
+    fun saveRoutes(routes: Collection<RouteWithGpx>) = transaction {
         RoutesTable
             .batchInsert(routes, shouldReturnGeneratedValues = false) {
-                this[RoutesTable.fileId] = it.id
-                this[RoutesTable.name] = it.name
-                this[RoutesTable.url] = it.url
-                this[RoutesTable.content] = ExposedBlob(it.content.encodeToByteArray())
+                this[RoutesTable.fileId] = it.route.id
+                this[RoutesTable.name] = it.route.name
+                this[RoutesTable.url] = it.route.url
+                this[RoutesTable.content] = ExposedBlob(it.gpx.encodeToByteArray())
             }
     }
 
@@ -75,21 +76,30 @@ class DatabaseConnector {
             }
     }
 
+    fun getAllRoutesIds(): Set<String> = transaction {
+        RoutesTable.slice(RoutesTable.fileId).selectAll().map { it[RoutesTable.fileId] }.toSet()
+    }
+
     fun getAllRoutes(): List<Route> = transaction {
         RoutesTable
+            .slice(RoutesTable.fileId, RoutesTable.name, RoutesTable.url)
             .selectAll()
             .map {
                 Route(
                     id = it[RoutesTable.fileId],
                     name = it[RoutesTable.name],
-                    content = it[RoutesTable.content].toString(),
                     url = it[RoutesTable.url],
                 )
             }
     }
 
-    fun resetTable() = transaction {
+    fun resetActivities() = transaction {
         SchemaUtils.drop(ActivitiesTable)
         SchemaUtils.create(ActivitiesTable)
+    }
+
+    fun resetRoutes() = transaction {
+        SchemaUtils.drop(RoutesTable)
+        SchemaUtils.create(RoutesTable)
     }
 }

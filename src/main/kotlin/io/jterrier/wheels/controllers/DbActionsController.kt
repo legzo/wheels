@@ -14,8 +14,8 @@ class DbActionsController(
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     fun reset(@Suppress("UNUSED_PARAMETER") request: Request): Response {
-        logger.info("Resetting table `activities`")
-        db.resetTable()
+        logger.info("Resetting table `routes`")
+        db.resetRoutes()
         return Response(Status.OK)
     }
 
