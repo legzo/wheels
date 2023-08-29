@@ -85,12 +85,12 @@ class GoogleDriveConnector {
         return fileList.files
     }
 
-    fun getFile(id: String) {
+    fun getFile(id: String): String {
         val uri = "$apiUrl/$id?alt=media"
         logger.info(">>> calling google @ {}", uri)
         val (response, duration) = measureTimedValue { refreshingTokenClient(Request(GET, uri)) }
         logger.info("    <<< got results in {}ms", duration.inWholeMilliseconds)
-        logger.info(response.bodyString())
+        return response.bodyString()
     }
 
 }

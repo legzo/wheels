@@ -2,6 +2,7 @@ package io.jterrier.wheels.views
 
 import io.jterrier.wheels.Route
 import kotlinx.html.FlowContent
+import kotlinx.html.a
 import kotlinx.html.b
 import kotlinx.html.div
 
@@ -18,7 +19,11 @@ class RoutesListView(
         div(classes = "grid") {
             routes.map { route ->
                 div {
-                    div(classes = "route") { b { +route.name } }
+                    div(classes = "route") {
+                        b { +route.name }
+                        +" "
+                        a(href = route.url, target = "_blank") { +"✎" }
+                    }
                 }
             }
         }

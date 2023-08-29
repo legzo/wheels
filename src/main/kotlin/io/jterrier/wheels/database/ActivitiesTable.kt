@@ -15,4 +15,5 @@ object ActivitiesTable: IntIdTable() {
     val maxSpeed = double("max_speed")
     val polyline = varchar("polyline", 4_000)
     val isCommute = bool("is_commute")
+
 }

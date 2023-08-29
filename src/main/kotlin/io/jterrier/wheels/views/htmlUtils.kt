@@ -1,8 +1,8 @@
 package io.jterrier.wheels.views
 
 import io.jterrier.wheels.Activity
-import io.jterrier.wheels.statistics.ActivityDistance
-import io.jterrier.wheels.statistics.MonthlyReport
+import io.jterrier.wheels.services.ActivityDistance
+import io.jterrier.wheels.services.MonthlyReport
 import kotlinx.html.FlowContent
 import kotlinx.html.FlowOrHeadingContent
 import kotlinx.html.FlowOrMetaDataOrPhrasingContent

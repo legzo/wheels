@@ -1,6 +1,7 @@
 package io.jterrier.wheels.database
 
 import io.jterrier.wheels.Activity
+import io.jterrier.wheels.Route
 import io.jterrier.wheels.databaseConfig
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -8,6 +9,7 @@ import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class DatabaseConnector {
@@ -24,10 +26,11 @@ class DatabaseConnector {
             // print sql to std-out
             addLogger(StdOutSqlLogger)
             SchemaUtils.create(ActivitiesTable)
+            SchemaUtils.create(RoutesTable)
         }
     }
 
-    fun save(activities: Collection<Activity>) = transaction {
+    fun saveActivities(activities: Collection<Activity>) = transaction {
         ActivitiesTable
             .batchInsert(activities, shouldReturnGeneratedValues = false) {
                 this[ActivitiesTable.stravaId] = it.id
@@ -43,7 +46,17 @@ class DatabaseConnector {
             }
     }
 
-    fun getAll(): List<Activity> = transaction {
+    fun saveRoutes(routes: Collection<Route>) = transaction {
+        RoutesTable
+            .batchInsert(routes, shouldReturnGeneratedValues = false) {
+                this[RoutesTable.fileId] = it.id
+                this[RoutesTable.name] = it.name
+                this[RoutesTable.url] = it.url
+                this[RoutesTable.content] = ExposedBlob(it.content.encodeToByteArray())
+            }
+    }
+
+    fun getAllActivities(): List<Activity> = transaction {
         ActivitiesTable
             .selectAll()
             .map {
@@ -58,6 +71,19 @@ class DatabaseConnector {
                     maxSpeed = it[ActivitiesTable.maxSpeed],
                     polyline = it[ActivitiesTable.polyline],
                     isCommute = it[ActivitiesTable.isCommute],
+                )
+            }
+    }
+
+    fun getAllRoutes(): List<Route> = transaction {
+        RoutesTable
+            .selectAll()
+            .map {
+                Route(
+                    id = it[RoutesTable.fileId],
+                    name = it[RoutesTable.name],
+                    content = it[RoutesTable.content].toString(),
+                    url = it[RoutesTable.url],
                 )
             }
     }

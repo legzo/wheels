@@ -1,4 +1,4 @@
-package io.jterrier.wheels.statistics
+package io.jterrier.wheels.services
 
 import io.jterrier.wheels.Activity
 import io.jterrier.wheels.views.toKm
