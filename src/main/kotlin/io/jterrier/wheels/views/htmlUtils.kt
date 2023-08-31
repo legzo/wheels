@@ -15,6 +15,7 @@ import kotlinx.html.HtmlTagMarker
 import kotlinx.html.attributesMapOf
 import kotlinx.html.div
 import kotlinx.html.id
+import kotlinx.html.img
 import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.unsafe
@@ -193,6 +194,9 @@ fun FlowOrMetaDataOrPhrasingContent.heatmapScript(id: String, polylines: List<St
             )
         }
     }
+
+fun FlowContent.svgIcon(name: String) =
+    img(src = "/svg/$name.svg", classes = "icon w-6 h-6")
 
 fun HTMLTag.svgFromFile(name: String) =
     unsafe {

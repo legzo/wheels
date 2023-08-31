@@ -4,6 +4,7 @@ import io.jterrier.wheels.Activity
 import io.jterrier.wheels.services.ActivityDistance
 import io.jterrier.wheels.services.MonthlyReport
 import kotlinx.html.FlowContent
+import kotlinx.html.a
 import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.id
@@ -50,8 +51,15 @@ class HomeView(
         div(classes = "grid") {
             heatMapActivities.take(12).map { activity ->
                 div {
-                    div(classes = "activity") { b { +activity.name } }
-                    div(classes = "activity-details") { +"${activity.distanceInMeters.toKm().show()} km • ${activity.averageSpeed.toKmPerSecond().show()} km/h • ${activity.totalElevationGain} m↑" }
+                    div(classes = "activity") {
+                        b {
+                            a(href = "https://www.strava.com/activities/${activity.id}", target = "_blank") { svgIcon("strava") }
+                            +activity.name
+                        }
+                    }
+                    div(classes = "activity-details") {
+                        +"${activity.distanceInMeters.toKm().show()} km • ${activity.averageSpeed.toKmPerSecond().show()} km/h • ${activity.totalElevationGain} m↑"
+                    }
                     div { mapForActivity(activity) }
                 }
             }

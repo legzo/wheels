@@ -3,9 +3,9 @@
 ## TODO
 
 - [x] Navigation entre "activités" et "routes"
-- [ ] Faire un lien vers les activités Strava
+- [x] Faire un lien vers les activités Strava
 - [x] Faire un lien vers les routes sur Brouter
-- [ ] Dessiner les routes brouter sur un leaflet avec le plugin gpx 
+- [x] Dessiner les routes brouter sur un leaflet avec le plugin gpx 
 - [ ] Ajouter le profil d'élévation aux activités
 - [ ] Ajouter le profil d'élévation aux routes
 

@@ -111,6 +111,11 @@ nav {
     padding-left: var(--space-xs-s);
 }
 
+img.icon {
+    width: 1em;
+    vertical-align: sub;
+}
+
 svg.icon {
     width: 1em;
     vertical-align: bottom;

@@ -31,13 +31,13 @@ class RoutesListView(
             val routeId = "route-${route.id}"
             div(classes = "route") {
                 id = routeId
-                a(href = route.url, target = "_blank") { +"✎" }
+                a(href = route.url, target = "_blank") { svgIcon("edit") }
                 +" "
                 a(href = "#") {
                     attributes["hx-get"] = "/route?id=${route.id}"
                     attributes["hx-target"] = "#$routeId"
                     attributes["hx-swap"] = "outerHTML"
-                    +"👁"
+                    svgIcon("view")
                 }
                 +" "
                 b { +route.name }
@@ -49,7 +49,9 @@ class RoutesListView(
         private fun DIV.routeDivDetails(route: Route) {
             div {
                 div(classes = "route") {
-                    a(href = route.url, target = "_blank") { +"✎" }
+                    a(href = route.url, target = "_blank") {
+                        svgIcon("edit")
+                    }
                     +" "
                     b { +route.name }
 
