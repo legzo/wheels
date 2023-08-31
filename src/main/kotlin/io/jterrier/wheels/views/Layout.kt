@@ -31,8 +31,17 @@ object Layout {
                 src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             ) {}
             script(
+                src = "https://unpkg.com/htmx.org@1.9.5",
+            ) {
+                attributes["crossorigin"] = "anonymous"
+            }
+            script(
                 type = "text/javascript",
                 src = "https://rawgit.com/jieter/Leaflet.encoded/master/Polyline.encoded.js"
+            ) {}
+            script(
+                type = "text/javascript",
+                src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"
             ) {}
 
             link(

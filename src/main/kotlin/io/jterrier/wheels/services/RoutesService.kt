@@ -13,8 +13,11 @@ class RoutesService(
     private val db: DatabaseConnector,
 ) {
 
-    fun getRoutes(): List<Route> {
+    fun getRouteWithGpx(id: String): RouteWithGpx? {
+        return db.getRouteWithGpx(id)
+    }
 
+    fun getRoutes(): List<Route> {
         val alreadySavedIds = db.getAllRoutesIds()
 
         val newFilesToFetch = googleDriveConnector

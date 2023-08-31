@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -101,5 +102,21 @@ class DatabaseConnector {
     fun resetRoutes() = transaction {
         SchemaUtils.drop(RoutesTable)
         SchemaUtils.create(RoutesTable)
+    }
+
+    fun getRouteWithGpx(id: String): RouteWithGpx? = transaction {
+        RoutesTable
+            .select { RoutesTable.fileId eq id }
+            .map {
+                RouteWithGpx(
+                    Route(
+                        id = it[RoutesTable.fileId],
+                        name = it[RoutesTable.name],
+                        url = it[RoutesTable.url],
+                    ),
+                    gpx = it[RoutesTable.content].bytes.decodeToString()
+                )
+            }
+            .firstOrNull()
     }
 }

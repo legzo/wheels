@@ -1,6 +1,7 @@
 package io.jterrier.wheels.views
 
 import io.jterrier.wheels.Activity
+import io.jterrier.wheels.Route
 import io.jterrier.wheels.services.ActivityDistance
 import io.jterrier.wheels.services.MonthlyReport
 import kotlinx.html.FlowContent
@@ -26,7 +27,6 @@ fun HEAD.inlineCssFromFile(fileName: String) =
         }
     }
 
-
 private const val graphHeight = 320
 
 fun FlowContent.mapForActivity(it: Activity) {
@@ -39,6 +39,59 @@ fun FlowContent.mapForActivity(it: Activity) {
 }
 
 fun String.rectify() = replace("""\""", """\\""")
+
+fun FlowContent.mapForRoute(it: Route) {
+    div {
+        id = "route-map-${it.id}"
+        attributes["style"] = "width: 100%; max-width: 400px; height: ${graphHeight}px; margin: 1vh 0 4vh 0;"
+    }
+    script {
+        unsafe {
+            raw(
+                """
+                (function () {
+                  const map = L.map('route-map-${it.id}', {
+                    zoomControl: false,
+                    scrollWheelZoom: false,
+                    touchZoom: false,
+                    dragging: false,
+                    zoomSnap: 0.3,
+                  });
+                  L.tileLayer(
+                    // 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',  
+                    'https://tile.osmand.net/hd/{z}/{x}/{y}.png',  
+                    {
+                      maxZoom: 18,
+                    }
+                  ).addTo(map);
+    
+                  var gpx = '/gpx?id=${it.id}'; // URL to your GPX file or the GPX itself
+                  new L.GPX(gpx, {
+                    async: true,
+                    polyline_options: {
+                      color: '#0042bf',
+                      weight: 4,
+                      opacity: .7,
+                      lineJoin: 'round'
+                    },
+                    marker_options: {
+                      startIconUrl: '/marker.png',
+                      endIconUrl: '/marker.png',
+                      shadowUrl: '/marker.png',
+                      wptIconUrls: {
+                        '': '/marker.png',
+                      }
+                    }
+                  }).on('loaded', function(e) {
+                    map.fitBounds(e.target.getBounds());
+                  }).addTo(map);
+                  
+                })()
+                """.trimIndent()
+            )
+        }
+    }
+}
 
 fun FlowOrMetaDataOrPhrasingContent.mapScript(id: Long, polyline: String) =
     mapScript(id.toString(), polyline)

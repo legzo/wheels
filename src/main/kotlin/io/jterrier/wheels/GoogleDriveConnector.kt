@@ -78,7 +78,7 @@ class GoogleDriveConnector {
 
 
     fun getFiles(): List<FileDto> {
-        val uri = "$apiUrl?orderBy=modifiedByMeTime desc&q='1AKhoENTeqeExaXyvd7tNncekqohBm5yB' in parents and name contains '.gpx'"
+        val uri = "$apiUrl?orderBy=modifiedByMeTime&q='1AKhoENTeqeExaXyvd7tNncekqohBm5yB' in parents and name contains '.gpx'"
         logger.info(">>> calling google @ {}", uri)
         val (fileList, duration) = measureTimedValue { fileListLens(refreshingTokenClient(Request(GET, uri))) }
         logger.info("    <<< got {} results in {}ms", fileList.files.size, duration.inWholeMilliseconds)
