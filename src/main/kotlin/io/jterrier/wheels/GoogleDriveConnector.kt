@@ -10,6 +10,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
+import org.http4k.core.Status
 import org.http4k.core.Uri
 import org.http4k.core.then
 import org.http4k.core.with
@@ -48,7 +49,7 @@ class GoogleDriveConnector {
             //.then(DebuggingFilters.PrintRequestAndResponse())
             .then(client)
 
-        clientAuth(
+        val tokenResponse = clientAuth(
             Request(Method.POST, apiAuthUrl)
                 .with(
                     OAuthWebForms.requestForm of WebForm()
@@ -61,7 +62,14 @@ class GoogleDriveConnector {
                             OAuthWebForms.scope of "https://www.googleapis.com/auth/drive"
                         )
                 )
-        ).takeIf { it.status.successful }
+        )
+
+        if (tokenResponse.status != Status.OK) {
+            logger.error("Error getting token, HTTP ${tokenResponse.status}")
+            logger.error(tokenResponse.bodyString())
+        }
+
+        tokenResponse.takeIf { it.status.successful }
             ?.let { ContentTypeJsonOrForm()(it).map { tokenDetails -> tokenDetails.accessToken }.valueOrNull() }
             ?.let { accessToken ->
                 ExpiringCredentials(

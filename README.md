@@ -46,3 +46,20 @@ utiliser la chaîne de connexion fournie par Fly. Donc il faut reconstituer les 
 reprendre le paramètre `sslmode=disable`.
 
 Pour que les inserts en mode batch soient plus performants on peut aussi mettre : `&reWriteBatchedInserts=true`
+
+## Authent Google
+
+1. Récupérer un code en lançant cette requête dans un navigateur : https://accounts.google.com/o/oauth2/auth?client_id=xxxxx20pkcd3.apps.googleusercontent.com&redirect_uri=http://localhost:5000&scope=https://www.googleapis.com/auth/drive&response_type=code&approval_prompt=force&access_type=offline
+2. Après acceptation des scopes, la page va rediriger sur localhost avec dans l'url un paramètre `code` à récupérer
+3. Utiliser ce code dans la requête suivante :
+    ```bash
+    curl \
+             -d "client_id=xxxxxn20pkcd3.apps.googleusercontent.com" \
+             -d "client_secret=xxxxx" \
+             -d "redirect_uri=http://localhost:5000" \
+             -d "grant_type=authorization_code" \
+             -d "code={{le_code_récupéré}}" \
+             "https://www.googleapis.com/oauth2/v4/token"
+    ``` 
+4. Cette requête retourne un objet json contenant un champ `refresh_token`, à positionner ensuite comme variable 
+   d'environnement, à la fois sur le launcher intellij et en variable d'env sur Fly.io.
