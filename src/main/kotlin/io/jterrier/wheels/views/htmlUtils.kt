@@ -351,14 +351,14 @@ inline fun FlowOrHeadingContent.h1(svg: String, title: String, crossinline block
     }
 
 @HtmlTagMarker
-inline fun FlowOrHeadingContent.h3(svg: String, title: String, crossinline block: H3.() -> Unit = {}): Unit =
+inline fun FlowOrHeadingContent.h3(svg: String? = null, title: String, crossinline block: H3.() -> Unit = {}): Unit =
     H3(attributesMapOf("class", null), consumer).visit {
         title(svg, title)
         block()
     }
 
-fun HTMLTag.title(svg: String, title: String) {
-    svgFromFile(svg)
+fun HTMLTag.title(svg: String? = null, title: String) {
+    svg?.let { svgFromFile(svg) }
     +title
 }
 

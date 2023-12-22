@@ -1,10 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val exposedVersion = "0.39.2"
-val http4kVersion = "4.29.0.0"
-val junitVersion = "5.9.0"
-val kotlinVersion = "1.7.0"
-val logbackVersion = "1.4.0"
+val exposedVersion = "0.51.1"
+val http4kVersion = "5.23.0.0"
+val junitVersion = "5.10.2"
+val kotlinVersion = "2.0.0"
+val kotlinxHtmlVersion = "0.11.0"
+val logbackVersion = "1.5.6"
+val postgresqlVersion = "42.7.3"
 
 buildscript {
     repositories {
@@ -13,14 +15,15 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0")
     }
 }
 
 plugins {
     application
-    kotlin("jvm") version "1.9.0"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    kotlin("jvm") version "2.0.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.github.ben-manes.versions") version "0.51.0"
 }
 
 repositories {
@@ -31,7 +34,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
 
-    implementation(platform("org.http4k:http4k-bom:5.4.0.0"))
+    implementation(platform("org.http4k:http4k-bom:$http4kVersion"))
     implementation("org.http4k:http4k-client-okhttp")
     implementation("org.http4k:http4k-core")
     implementation("org.http4k:http4k-format-jackson")
@@ -45,9 +48,9 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:$exposedVersion")
 
-    implementation("org.postgresql:postgresql:42.5.1")
+    implementation("org.postgresql:postgresql:$postgresqlVersion")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.9.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:$kotlinxHtmlVersion")
 
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
@@ -77,4 +80,23 @@ tasks {
 
 val test by tasks.getting(Test::class) {
     useJUnitPlatform { }
+}
+
+
+tasks.dependencyUpdates {
+    resolutionStrategy {
+        componentSelection {
+            all {
+                val rejected = listOf("alpha", "beta", "b", "rc", "cr", "m", "preview", "eap")
+                    .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]*") }
+                    .any { it.matches(candidate.version) }
+                if (rejected) {
+                    reject("Release candidate")
+                }
+            }
+        }
+    }
+    checkForGradleUpdate = true
+    outputFormatter = "json"
+    outputDir = "$projectDir/build/dependencyUpdates"
 }

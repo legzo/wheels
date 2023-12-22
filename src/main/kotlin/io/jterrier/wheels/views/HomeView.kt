@@ -3,17 +3,20 @@ package io.jterrier.wheels.views
 import io.jterrier.wheels.Activity
 import io.jterrier.wheels.services.ActivityDistance
 import io.jterrier.wheels.services.MonthlyReport
+import io.jterrier.wheels.services.YearlyStats
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.b
 import kotlinx.html.div
 import kotlinx.html.id
+import kotlinx.html.span
 
 class HomeView(
     private val heatMapActivities: List<Activity>,
     private val totalNbOfActivities: Int,
     private val monthlyDistances: List<MonthlyReport>,
     private val scatterPlotData: List<ActivityDistance>,
+    private val yearlyStats: YearlyStats
 ) {
 
     private val numberOfActivities = 12
@@ -24,6 +27,9 @@ class HomeView(
             monthlyDistance()
             scatterPlot()
         }
+
+        yearly()
+
         listOfActivitiesWithMaps()
     }
 
@@ -46,6 +52,25 @@ class HomeView(
         scatterPlot(scatterPlotData)
     }
 
+    private fun FlowContent.yearly() = div {
+        h3(svg = "progress", "this year so far")
+
+        div(classes = "grid") {
+            distanceAndLabel(yearlyStats.totalKms, "total")
+            distanceAndLabel(yearlyStats.commuteKms, "commute")
+            distanceAndLabel(yearlyStats.nonCommuteKms, "non commute")
+        }
+
+    }
+
+    private fun FlowContent.distanceAndLabel(distance: Int, label: String) {
+        div {
+            span(classes = "value") { +"$distance" }
+            span { +" kms" }
+            span(classes = "label") { +label }
+        }
+    }
+
     private fun FlowContent.listOfActivitiesWithMaps() = div {
         h3(svg = "list", "last $numberOfActivities rides")
         div(classes = "grid") {
@@ -53,12 +78,17 @@ class HomeView(
                 div {
                     div(classes = "activity") {
                         b {
-                            a(href = "https://www.strava.com/activities/${activity.id}", target = "_blank") { svgIcon("strava") }
+                            a(
+                                href = "https://www.strava.com/activities/${activity.id}",
+                                target = "_blank"
+                            ) { svgIcon("strava") }
                             +activity.name
                         }
                     }
                     div(classes = "activity-details") {
-                        +"${activity.distanceInMeters.toKm().show()} km • ${activity.averageSpeed.toKmPerSecond().show()} km/h • ${activity.totalElevationGain} m↑"
+                        +"${activity.distanceInMeters.toKm().show()} km • ${
+                            activity.averageSpeed.toKmPerSecond().show()
+                        } km/h • ${activity.totalElevationGain} m↑"
                     }
                     div { mapForActivity(activity) }
                 }

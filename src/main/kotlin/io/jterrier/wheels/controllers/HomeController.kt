@@ -32,7 +32,11 @@ class HomeController(
                 heatMapActivities = activitiesToDisplay,
                 totalNbOfActivities = allActivities.size,
                 monthlyDistances = statsService.getMonthlyDistance(allActivities),
-                scatterPlotData = statsService.getScatterPlotData(allActivities.filter { !it.isCommute })
+                scatterPlotData = statsService.getScatterPlotData(allActivities
+                    .filter { !it.isCommute }
+                    .filter { it.isInLastXYears(4) }
+                ),
+                yearlyStats = statsService.getYearlyStats(allActivities)
             )
                 .display()
         )

@@ -7,6 +7,7 @@ import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.seconds
 
 class StatsService {
 
@@ -20,10 +21,13 @@ class StatsService {
             .map { (month, activities) ->
                 MonthlyReport(
                     month = month,
-                    distance = activities.sumOf { it.distanceInMeters }.toKm().toInt()
+                    distance = activities.sumInKms()
                 )
             }
             .sortedBy { it.month }
+
+    private fun List<Activity>.sumInKms() =
+        sumOf { it.distanceInMeters }.toKm().toInt()
 
 
     fun getScatterPlotData(activities: List<Activity>): List<ActivityDistance> =
@@ -36,6 +40,20 @@ class StatsService {
                     isCommute = it.isCommute
                 )
             }
+
+    fun getYearlyStats(activities: List<Activity>): YearlyStats {
+        val lastYearActivities = activities.filter { it.isInCurrentYear() }
+
+        val (commuteActivities, nonCommuteActivities) = lastYearActivities.partition { it.isCommute }
+
+        return YearlyStats(
+            commuteKms = commuteActivities.sumInKms(),
+            nonCommuteKms = nonCommuteActivities.sumInKms(),
+            totalKms = lastYearActivities.sumInKms(),
+            nbOfActivities = lastYearActivities.size,
+            totalTimeOnBikeInHours = lastYearActivities.sumOf { it.durationInSeconds }.seconds.inWholeHours.toInt()
+        )
+    }
 }
 
 data class MonthlyReport(
@@ -47,4 +65,12 @@ data class ActivityDistance(
     val date: String,
     val distance: Int,
     val isCommute: Boolean
+)
+
+data class YearlyStats(
+    val commuteKms: Int,
+    val nonCommuteKms: Int,
+    val totalKms: Int,
+    val nbOfActivities: Int,
+    val totalTimeOnBikeInHours: Int
 )
