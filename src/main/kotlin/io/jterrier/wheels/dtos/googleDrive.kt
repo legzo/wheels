@@ -8,3 +8,7 @@ data class FileDto(
     val id: String,
     val name: String,
 )
+
+data class FileModifiedTimeDto(
+    val modifiedTime: String,
+)

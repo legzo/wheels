@@ -22,10 +22,9 @@ fun <T : Any, U> Collection<U>.launchChunked(
             chunked(chunkSize)
                 .mapIndexed { index, chunk ->
 
-                    val chunkResults = chunk.map {
-                        async { todo(it) }
-                    }.awaitAll()
-
+                    val chunkResults = chunk
+                        .map { async { todo(it) } }
+                        .awaitAll()
 
                     val todoCount = max(size - (index + 1) * chunkSize, 0)
                     parallelizationLogger.info("Remaining : $todoCount / $size")

@@ -4,6 +4,7 @@ import dev.forkhandles.result4k.map
 import dev.forkhandles.result4k.valueOrNull
 import io.jterrier.wheels.dtos.FileDto
 import io.jterrier.wheels.dtos.FileListDto
+import io.jterrier.wheels.dtos.FileModifiedTimeDto
 import org.http4k.client.OkHttp
 import org.http4k.core.Body
 import org.http4k.core.HttpHandler
@@ -31,6 +32,8 @@ import kotlin.time.measureTimedValue
 
 class GoogleDriveConnector {
 
+    private val callLogMessage = "[{}ms] for {}"
+
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     private val apiAuthUrl = "https://www.googleapis.com/oauth2/v4/token"
@@ -39,6 +42,7 @@ class GoogleDriveConnector {
     private val client: HttpHandler = OkHttp()
 
     private val fileListLens = Body.auto<FileListDto>().toLens()
+    private val fileModifiedTimeLens = Body.auto<FileModifiedTimeDto>().toLens()
 
     private val refreshTokenFn = RefreshCredentials<String> { oldToken ->
 
@@ -81,24 +85,31 @@ class GoogleDriveConnector {
 
     private val refreshingTokenClient = ClientFilters
         .BearerAuth(CredentialsProvider.Refreshing(refreshFn = refreshTokenFn))
-            //.then(DebuggingFilters.PrintRequestAndResponse())
-            .then(client)
+        //.then(DebuggingFilters.PrintRequestAndResponse())
+        .then(client)
 
 
     fun getFiles(): List<FileDto> {
-        val uri = "$apiUrl?orderBy=modifiedByMeTime&q='1AKhoENTeqeExaXyvd7tNncekqohBm5yB' in parents and name contains '.gpx'"
-        logger.info(">>> calling google @ {}", uri)
+        val uri =
+            "$apiUrl?orderBy=modifiedTime desc&q='1AKhoENTeqeExaXyvd7tNncekqohBm5yB' in parents and name contains '.gpx'"
         val (fileList, duration) = measureTimedValue { fileListLens(refreshingTokenClient(Request(GET, uri))) }
-        logger.info("    <<< got {} results in {}ms", fileList.files.size, duration.inWholeMilliseconds)
+        logger.info(callLogMessage, duration.inWholeMilliseconds,  uri)
+        logger.info("Got {} results", fileList.files.size)
         return fileList.files
     }
 
-    fun getFile(id: String): String {
+    fun getFileContents(id: String): String {
         val uri = "$apiUrl/$id?alt=media"
-        logger.info(">>> calling google @ {}", uri)
         val (response, duration) = measureTimedValue { refreshingTokenClient(Request(GET, uri)) }
-        logger.info("    <<< got results in {}ms", duration.inWholeMilliseconds)
+        logger.info(callLogMessage, duration.inWholeMilliseconds,  uri)
         return response.bodyString()
+    }
+
+    fun getFileModifiedTime(id: String): String {
+        val uri = "$apiUrl/$id?fields=modifiedTime"
+        val (response, duration) = measureTimedValue { fileModifiedTimeLens(refreshingTokenClient(Request(GET, uri))) }
+        logger.info(callLogMessage, duration.inWholeMilliseconds,  uri)
+        return response.modifiedTime
     }
 
 }

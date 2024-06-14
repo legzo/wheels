@@ -9,7 +9,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.batchInsert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -27,8 +26,7 @@ class DatabaseConnector {
         transaction {
             // print sql to std-out
             addLogger(StdOutSqlLogger)
-            SchemaUtils.create(ActivitiesTable)
-            SchemaUtils.create(RoutesTable)
+            SchemaUtils.createMissingTablesAndColumns(RoutesTable, ActivitiesTable)
         }
     }
 
@@ -54,6 +52,7 @@ class DatabaseConnector {
                 this[RoutesTable.fileId] = it.route.id
                 this[RoutesTable.name] = it.route.name
                 this[RoutesTable.url] = it.route.url
+                this[RoutesTable.lastModified] = it.route.lastModified
                 this[RoutesTable.content] = ExposedBlob(it.gpx.encodeToByteArray())
             }
     }
@@ -78,18 +77,22 @@ class DatabaseConnector {
     }
 
     fun getAllRoutesIds(): Set<String> = transaction {
-        RoutesTable.slice(RoutesTable.fileId).selectAll().map { it[RoutesTable.fileId] }.toSet()
+        RoutesTable
+            .select(RoutesTable.fileId)
+            .where { RoutesTable.lastModified.isNotNull() }
+            .map { it[RoutesTable.fileId] }
+            .toSet()
     }
 
     fun getAllRoutes(): List<Route> = transaction {
         RoutesTable
-            .slice(RoutesTable.fileId, RoutesTable.name, RoutesTable.url)
-            .selectAll()
+            .select(RoutesTable.fileId, RoutesTable.name, RoutesTable.url, RoutesTable.lastModified)
             .map {
                 Route(
                     id = it[RoutesTable.fileId],
                     name = it[RoutesTable.name],
                     url = it[RoutesTable.url],
+                    lastModified = it[RoutesTable.lastModified]
                 )
             }
     }
@@ -106,13 +109,15 @@ class DatabaseConnector {
 
     fun getRouteWithGpx(id: String): RouteWithGpx? = transaction {
         RoutesTable
-            .select { RoutesTable.fileId eq id }
+            .selectAll()
+            .where { RoutesTable.fileId eq id }
             .map {
                 RouteWithGpx(
                     Route(
                         id = it[RoutesTable.fileId],
                         name = it[RoutesTable.name],
                         url = it[RoutesTable.url],
+                        lastModified = it[RoutesTable.lastModified]
                     ),
                     gpx = it[RoutesTable.content].bytes.decodeToString()
                 )

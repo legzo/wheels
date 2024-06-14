@@ -7,6 +7,9 @@ import io.jterrier.wheels.database.DatabaseConnector
 import io.jterrier.wheels.launchChunked
 import io.jterrier.wheels.parseWithRegex
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.datetime.Instant
 
 class RoutesService(
     private val googleDriveConnector: GoogleDriveConnector,
@@ -23,23 +26,31 @@ class RoutesService(
         val newFilesToFetch = googleDriveConnector
             .getFiles()
             .filter { it.id !in alreadySavedIds }
+            .take(40)
 
         val newRoutes = newFilesToFetch
             .launchChunked(Dispatchers.IO, 10) {
-                val routeGpx = googleDriveConnector.getFile(it.id)
-                RouteWithGpx(
-                    route = Route(
-                        id = it.id,
-                        name = it.name.replace(".gpx", ""),
-                        url = findUrl(routeGpx)
-                    ),
-                    gpx = routeGpx
-                )
+                coroutineScope {
+
+                    val routeGpx = async { googleDriveConnector.getFileContents(it.id) }
+                    val lastModified = async { googleDriveConnector.getFileModifiedTime(it.id) }
+
+                    RouteWithGpx(
+                        route = Route(
+                            id = it.id,
+                            name = it.name.replace(".gpx", ""),
+                            url = findUrl(routeGpx.await()),
+                            lastModified = Instant.parse(lastModified.await())
+                        ),
+                        gpx = routeGpx.await()
+                    )
+
+                }
             }
 
         db.saveRoutes(newRoutes)
 
-        return db.getAllRoutes()
+        return db.getAllRoutes().sortedByDescending { it.lastModified }
     }
 
     companion object {
