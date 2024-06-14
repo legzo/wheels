@@ -1,4 +1,4 @@
-FROM amazoncorretto:17
+FROM amazoncorretto:21
 COPY ./build/libs/wheels-all.jar /bin/runner/run.jar
 WORKDIR /bin/runner
 
