@@ -5,26 +5,34 @@ import io.jterrier.wheels.views.toKm
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration.Companion.seconds
 
 class StatsService {
 
-    fun getMonthlyDistance(activities: List<Activity>): List<MonthlyReport> =
-        activities
-            .groupBy {
-                val date: LocalDateTime =
-                    it.startTime.toLocalDateTime(TimeZone.of("Europe/Paris")).toJavaLocalDateTime()
-                DateTimeFormatter.ofPattern("yyyy-MM").format(date)
-            }
-            .map { (month, activities) ->
+    fun getMonthlyDistances(activities: List<Activity>): List<MonthlyReport> {
+        val (thisYear, previousYear) = activities
+            .groupBy { it.month() }
+            .toList()
+            .sortedByDescending { (month, _) -> month }
+            .chunked(13)
+            .take(2)
+
+        return thisYear
+            .zip(previousYear)
+            .map { (current, previous) ->
                 MonthlyReport(
-                    month = month,
-                    distance = activities.sumInKms()
+                    month = current.first,
+                    distance = current.second.sumInKms(),
+                    distanceVsPreviousYear = current.second.sumInKms() - previous.second.sumInKms()
                 )
             }
-            .sortedBy { it.month }
+    }
+
+    private fun Activity.month(): String {
+        val date = startTime.toLocalDateTime(TimeZone.of("Europe/Paris")).toJavaLocalDateTime()
+        return DateTimeFormatter.ofPattern("yyyy-MM").format(date)
+    }
 
     private fun List<Activity>.sumInKms() =
         sumOf { it.distanceInMeters }.toKm().toInt()
@@ -58,7 +66,8 @@ class StatsService {
 
 data class MonthlyReport(
     val month: String,
-    val distance: Int
+    val distance: Int,
+    val distanceVsPreviousYear: Int,
 )
 
 data class ActivityDistance(

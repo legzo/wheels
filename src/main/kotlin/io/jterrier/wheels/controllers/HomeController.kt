@@ -31,7 +31,7 @@ class HomeController(
             HomeView(
                 heatMapActivities = activitiesToDisplay,
                 totalNbOfActivities = allActivities.size,
-                monthlyDistances = statsService.getMonthlyDistance(allActivities),
+                monthlyDistances = statsService.getMonthlyDistances(allActivities),
                 scatterPlotData = statsService.getScatterPlotData(allActivities
                     .filter { !it.isCommute }
                     .filter { it.isInLastXYears(4) }

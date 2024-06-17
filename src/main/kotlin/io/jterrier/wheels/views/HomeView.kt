@@ -44,7 +44,7 @@ class HomeView(
 
     private fun FlowContent.monthlyDistance() = div {
         h3(svg = "graph", "monthly kms")
-        monthlyGraph(monthlyDistances.takeLast(13))
+        monthlyGraph(monthlyDistances)
     }
 
     private fun FlowContent.scatterPlot() = div {

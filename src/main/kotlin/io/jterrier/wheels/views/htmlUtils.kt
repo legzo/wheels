@@ -209,7 +209,9 @@ fun FlowContent.monthlyGraph(monthlyDistances: List<MonthlyReport>) {
     }
 
     val monthlyDistancesJson = monthlyDistances
-        .joinToString(prefix = "[", postfix = "]") { "{ month: new Date('${it.month}'), distance: ${it.distance} }" }
+        .joinToString(prefix = "[", postfix = "]") {
+            "{ month: new Date('${it.month}'), distance: ${it.distance}, diff: ${it.distanceVsPreviousYear} }"
+        }
 
     script(type = "module") {
         unsafe {
@@ -218,6 +220,8 @@ fun FlowContent.monthlyGraph(monthlyDistances: List<MonthlyReport>) {
                 import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
                 
                 const data = $monthlyDistancesJson
+                
+                const maxY = Math.max(...data.map((it) => it.distance + it.diff))
                 
                  const plot =
                   Plot
@@ -232,7 +236,7 @@ fun FlowContent.monthlyGraph(monthlyDistances: List<MonthlyReport>) {
                           grid: true,
                           label: null,
                           labelAnchor: "top",
-                          domain: [0, 700],
+                          domain: [0, maxY],
                           ticks: 6,
                         },
                         style: {
@@ -254,7 +258,7 @@ fun FlowContent.monthlyGraph(monthlyDistances: List<MonthlyReport>) {
                             {
                               x: "month",
                               y: "distance",
-                              fillOpacity: 0.1
+                              fillOpacity: 0.08
                             }
                           ),
                           Plot.dot(
@@ -271,9 +275,20 @@ fun FlowContent.monthlyGraph(monthlyDistances: List<MonthlyReport>) {
                             data,
                             {
                               x: "month",
-                              y: "distance",
+                              y: (d) => (d.distance + d.diff),
                               r: 8,
-                              stroke: "#0042bf",
+                              stroke: (d) => (d.diff > 0 ? "green" : "#ff6600"),
+                            },                            
+                          ),
+                          Plot.ruleX(
+                            data,
+                            {
+                              x: "month",
+                              y2: (d) => (d.distance + d.diff),
+                              y1: "distance",
+                              strokeWidth: 3,
+                              markerEnd: "dot",
+                              stroke: (d) => (d.diff > 0 ? "green" : "#ff6600"),
                             },                            
                           )
                         ]
