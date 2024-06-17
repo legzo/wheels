@@ -2,10 +2,10 @@
 
 ## TODO
 
-- [ ] Ajouter dans le line chart annuel la comparaison avec l'année n-1
-- [ ] Pourcentage sur objectif annuel
+- [x] Ajouter dans le line chart annuel la comparaison avec l'année n-1
+- [x] Pourcentage sur objectif annuel
 - [ ] Switch entre heatmap totale / sur 4 ans / sur 1 an
-- [ ] Ajouter la date de modification sur les route
+- [ ] Ajouter la date de modification sur les routes
 - [ ] Ajouter le next Eddington number
 - [x] Navigation entre "activités" et "routes"
 - [x] Faire un lien vers les activités Strava

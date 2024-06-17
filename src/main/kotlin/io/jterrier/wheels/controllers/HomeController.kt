@@ -36,7 +36,8 @@ class HomeController(
                     .filter { !it.isCommute }
                     .filter { it.isInLastXYears(4) }
                 ),
-                yearlyStats = statsService.getYearlyStats(allActivities)
+                yearlyStats = statsService.getYearlyStats(allActivities),
+                eddingtonNumber = statsService.getEddingtonNumber(allActivities),
             )
                 .display()
         )

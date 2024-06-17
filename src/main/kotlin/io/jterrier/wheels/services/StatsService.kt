@@ -5,10 +5,19 @@ import io.jterrier.wheels.views.toKm
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.time.Duration.Companion.seconds
 
 class StatsService {
+
+    fun getEddingtonNumber(activities: List<Activity>): Int {
+        val distances = activities.map { it.distanceInMeters.toKm().toInt() }.sortedDescending()
+        val indexOf = distances
+            .indexOfFirst { it < distances.indexOf(it) + 1 }
+
+        return distances[indexOf]
+    }
 
     fun getMonthlyDistances(activities: List<Activity>): List<MonthlyReport> {
         val (thisYear, previousYear) = activities
@@ -53,13 +62,16 @@ class StatsService {
         val lastYearActivities = activities.filter { it.isInCurrentYear() }
 
         val (commuteActivities, nonCommuteActivities) = lastYearActivities.partition { it.isCommute }
+        val totalKms = lastYearActivities.sumInKms()
 
         return YearlyStats(
             commuteKms = commuteActivities.sumInKms(),
             nonCommuteKms = nonCommuteActivities.sumInKms(),
-            totalKms = lastYearActivities.sumInKms(),
+            totalKms = totalKms,
             nbOfActivities = lastYearActivities.size,
-            totalTimeOnBikeInHours = lastYearActivities.sumOf { it.durationInSeconds }.seconds.inWholeHours.toInt()
+            totalTimeOnBikeInHours = lastYearActivities.sumOf { it.durationInSeconds }.seconds.inWholeHours.toInt(),
+            percentage = ((totalKms / 6000.0) * 100).toInt(),
+            timePercentage = (OffsetDateTime.now().toLocalDateTime().dayOfYear / 365.0 * 100).toInt()
         )
     }
 }
@@ -81,5 +93,7 @@ data class YearlyStats(
     val nonCommuteKms: Int,
     val totalKms: Int,
     val nbOfActivities: Int,
-    val totalTimeOnBikeInHours: Int
+    val totalTimeOnBikeInHours: Int,
+    val timePercentage: Int,
+    val percentage: Int
 )

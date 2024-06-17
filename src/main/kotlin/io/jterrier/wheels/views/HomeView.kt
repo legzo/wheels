@@ -16,7 +16,8 @@ class HomeView(
     private val totalNbOfActivities: Int,
     private val monthlyDistances: List<MonthlyReport>,
     private val scatterPlotData: List<ActivityDistance>,
-    private val yearlyStats: YearlyStats
+    private val yearlyStats: YearlyStats,
+    private val eddingtonNumber: Int,
 ) {
 
     private val numberOfActivities = 12
@@ -34,7 +35,10 @@ class HomeView(
     }
 
     private fun FlowContent.heatMap() = div {
-        h3(svg = "map", "$totalNbOfActivities rides")
+        h3(svg = "map", title = null) {
+            span(classes = "mono") { +"$totalNbOfActivities" }
+            span { +" rides"}
+        }
         div {
             id = "heatmap"
             attributes["style"] = "width: 100%; max-width: 400px; height: 300px; margin: 1vh 0 4vh 0;"
@@ -56,17 +60,25 @@ class HomeView(
         h3(svg = "progress", "this year so far")
 
         div(classes = "grid") {
-            distanceAndLabel(yearlyStats.totalKms, "total")
-            distanceAndLabel(yearlyStats.commuteKms, "commute")
-            distanceAndLabel(yearlyStats.nonCommuteKms, "non commute")
+            div {
+                valueAndLabel(yearlyStats.totalKms, "total kms")
+                div { +"${yearlyStats.commuteKms} commute" }
+                div { +"${yearlyStats.nonCommuteKms} non commute" }
+            }
+            div {
+                valueAndLabel(eddingtonNumber, "eddington number")
+            }
+            div {
+                valueAndLabel(yearlyStats.percentage, "% of 6000 kms")
+                valueAndLabel(yearlyStats.timePercentage, "% elapsed")
+            }
         }
 
     }
 
-    private fun FlowContent.distanceAndLabel(distance: Int, label: String) {
+    private fun FlowContent.valueAndLabel(value: Int, label: String) {
         div {
-            span(classes = "value") { +"$distance" }
-            span { +" kms" }
+            span(classes = "value mono") { +"$value" }
             span(classes = "label") { +label }
         }
     }
@@ -86,9 +98,12 @@ class HomeView(
                         }
                     }
                     div(classes = "activity-details") {
-                        +"${activity.distanceInMeters.toKm().show()} km • ${
-                            activity.averageSpeed.toKmPerSecond().show()
-                        } km/h • ${activity.totalElevationGain} m↑"
+                        span(classes = "mono") { +activity.distanceInMeters.toKm().show() }
+                        span { +"km  • "}
+                        span(classes = "mono") { +activity.averageSpeed.toKmPerSecond().show() }
+                        span { +"km/h • "}
+                        span(classes = "mono") { +"${activity.totalElevationGain}"}
+                        span { +"m↑"}
                     }
                     div { mapForActivity(activity) }
                 }
