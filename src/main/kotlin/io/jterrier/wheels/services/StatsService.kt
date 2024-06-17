@@ -24,7 +24,7 @@ class StatsService {
             .groupBy { it.month() }
             .toList()
             .sortedByDescending { (month, _) -> month }
-            .chunked(13)
+            .chunked(12)
             .take(2)
 
         return thisYear
