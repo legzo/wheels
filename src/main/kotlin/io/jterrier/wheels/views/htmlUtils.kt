@@ -266,7 +266,7 @@ fun FlowContent.monthlyGraph(monthlyDistances: List<MonthlyReport>) {
                             {
                               x: "month",
                               y: "distance",
-                              r: 6,
+                              r: 8,
                               fill: "#0042bf",
                               tip: true,
                             },                            
@@ -275,7 +275,7 @@ fun FlowContent.monthlyGraph(monthlyDistances: List<MonthlyReport>) {
                             data,
                             {
                               x: "month",
-                              y: (d) => (d.distance + d.diff),
+                              y: (d) => (d.distance - d.diff),
                               r: 8,
                               stroke: (d) => (d.diff > 0 ? "green" : "#ff6600"),
                             },                            
@@ -284,7 +284,7 @@ fun FlowContent.monthlyGraph(monthlyDistances: List<MonthlyReport>) {
                             data,
                             {
                               x: "month",
-                              y2: (d) => (d.distance + d.diff),
+                              y2: (d) => (d.distance - d.diff),
                               y1: "distance",
                               strokeWidth: 3,
                               markerEnd: "dot",
